@@ -4,7 +4,7 @@ author: 'TurtleBrowser'
 
 inputs:
   version:
-    description: "Wanted conan version"
+    description: "Wanted Conan version"
     required: false
     default: ''
 
@@ -16,18 +16,25 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Install setup tools
-      run: pip3 install wheel setuptools
+    - name: Create virtualenv on macOS
+      if: ${{ runner.os == 'macOS' }}
+      run: |
+        python3 -m venv .
+        source ./bin/activate
       shell: bash
 
-    - name: Install conan latest
+    - name: Install Python setuptools
+      run: python3 -m pip install wheel setuptools
+      shell: bash
+
+    - name: Install Conan latest
       if: ${{ inputs.version == '' }}
-      run: pip3 install conan --upgrade
+      run: python3 -m pip install conan --upgrade
       shell: bash
 
-    - name: Install conan version ${{ inputs.version }}
+    - name: Install Conan version ${{ inputs.version }}
       if: ${{ inputs.version != '' }}
-      run: pip3 install conan==${{ inputs.version }} --upgrade
+      run: python3 -m pip install conan==${{ inputs.version }} --upgrade
       shell: bash
 
     - name: Fix path on Linux
